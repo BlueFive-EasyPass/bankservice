@@ -110,12 +110,6 @@ export class Repository implements IRepository {
     async recovery(data: IDomain['data']) {
         try {
             const id = data.id as string
-            console.log('REPOO', data);
-            console.log('REPOO',id);
-            console.log('REPOO',data.id);
-            
-            
-            
             const customer = await this.stripe.customers.retrieve(id);
             console.log(customer);
             
