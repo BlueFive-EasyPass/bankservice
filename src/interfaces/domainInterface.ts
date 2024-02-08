@@ -13,13 +13,13 @@ export interface IDomain {
         externalReference: string,
         notificationDisabled: true,
         groupName: string,
-        company: string | undefined
+        company: string | undefined,
     }
 
     save(resultTranform: Array<object>): Promise<any>;
     searchID(): Promise<any>;
-    searchAll(): Promise<any>;
-    update(arg0: any): Promise<any>;
+    searchAll(arg0: any): Promise<any>;
+    update(arg0: any, id: string): Promise<any>;
     delete(): Promise<any>;
     recovery(): Promise<any>;
 }

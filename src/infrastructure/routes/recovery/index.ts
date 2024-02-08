@@ -6,16 +6,14 @@ import { IInstanceManager } from "../../../interfaces/interfaceInstanceManager"
 import { IController } from "../../../interfaces/interfaceController"
 
 export default () => <Resource>{
-    post: {
+    get: {
         handler: async (request: FastifyRequest, reply: FastifyReply) => {
-            try {
-                const protocol = request.protocol
-                const data = request.body as IDomain['data']
-                const instanceManager: IInstanceManager = new InstanceManager(data, protocol, null)
-                const controller: IController = instanceManager.getController()
+            try {                
+                const data = request.query as IDomain['data']
                 console.log(data);
-                console.log(instanceManager);
-                console.log(controller);
+
+                const instanceManager: IInstanceManager = new InstanceManager(data, null)
+                const controller: IController = instanceManager.getController()
                 await controller.recovery(reply)
             } catch (error) {
                 reply.code(500).send({ error: error })

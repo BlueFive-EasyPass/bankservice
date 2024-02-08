@@ -41,9 +41,9 @@ export class Controller implements IController {
         }
     }
 
-    async searchAll(reply: FastifyReply) {
+    async searchAll(reply: FastifyReply, limit: any) {
         try {
-            const result = await this.domain.searchAll()
+            const result = await this.domain.searchAll(limit)
             if (result) {
                 reply.code(200).send({ send: result })
             } else {
@@ -54,16 +54,21 @@ export class Controller implements IController {
         }
     }
 
-    async update(reply: FastifyReply, params: IDomain['data']) {
+    async update(reply: FastifyReply, id: string) {
         try {
-            const result = await this.domain.update(params)
+            const resultTranform = await this.mid.transformUsers()
+            console.log('transform', resultTranform, id);
+            
+            const result = await this.domain.update(resultTranform, id)
+            console.log('VAI POOHAAAAAAAAAA');
+            
             if (result) {
-                reply.code(200).send({ send: result })
-            } else {
-                reply.code(400).send({ error: 'Erro ao retornar requisição' })
+                return reply.code(200).send({ send: result });
             }
+            return reply.code(400).send({ error: 'Erro ao retornar requisição' });
+            
         } catch (error) {
-            reply.code(500).send({ error: 'Erro ao processar requisição' })
+            reply.code(500).send({ error: 'Erro ao processar requisição no controller' })
         }
     }
     async delete(reply: FastifyReply) {
@@ -81,7 +86,9 @@ export class Controller implements IController {
 
     async recovery(reply: FastifyReply) {
         try {
-            const result = await this.domain.delete()
+            console.log('aaaaa');
+            
+            const result = await this.domain.recovery()
             if (result) {
                 reply.code(200).send({ send: result })
             } else {

@@ -2,85 +2,106 @@ import axios from "axios";
 import { IRepository } from "../interfaces/interfaceRepository";
 import dotenv from 'dotenv'
 import { IDomain } from "../interfaces/domainInterface";
+import Stripe from "stripe";
 dotenv.config()
+
 export class Repository implements IRepository {
     protected api: string | undefined
-    protected protocol: string
+    protected stripe: Stripe
+    protected token: string
 
-    constructor(protocol: string) {
-        this.protocol = protocol
+    constructor() {
         this.api = process.env.api
+        this.token = process.env.token as string
+        this.stripe = new Stripe(this.token)
     }
 
-    private async optionGet(data: IDomain['data']) {
-        console.log('TA INDO');
-        console.log(process.env.token);
-        console.log(this.protocol);
-
-        const options = {
-            method: 'POST',
-            headers: {
-                accept: 'application/json',
-                'content-type': 'application/json',
-                access_token: '$aact_YTU5YTE0M2M2N2I4MTliNzk0YTI5N2U5MzdjNWZmNDQ6OjAwMDAwMDAwMDAwMDAzMjk4NTA6OiRhYWNoX2JiM2I4YmRmLWVjMTctNDU5NC1iZDkzLTk0ZDFmNTZjMDYzYQ=='
-            },
-            body: JSON.stringify(data)
-        };
-        console.log(options);
-
-        return options
-    }
-
-    async save(resultTranform: Array<any>) {
+    private async sendIdsCustomer(user: any) {
         try {
+            const array: Array<object> = [user]
+            console.log('TESTE', array);
 
-            console.log('CHEGUEI REPO');
-
-            console.log('REPO', resultTranform);
-            console.log(resultTranform[0]);
-
-            const options = await this.optionGet(resultTranform[0]);
-            console.log('REPO', options);
-            const result: any = await axios.post(`${this.api}customers`, options);
-            console.log('REPO', result);
-            const responseData = await result.json();
-            console.log('Cliente criado com sucesso:', responseData);
-            console.log('REPO', responseData);
-
-
-            return responseData;
-        } catch (error: any) {
-            console.error('Erro na requisição:', error);
-            throw error;
+            const result = axios.patch('http://localhost:3000/customer/', { data: array })
+            return result
+        } catch (error) {
+            return error
         }
+    }
+
+    async save(resultTransform: Array<any>) {
+        const createdCustomers: any[] = [];
+
+        for (const user of resultTransform) {
+            try {
+                console.log(resultTransform);
+
+                const customer = await this.stripe.customers.create({ ...user });
+                console.log(customer);
+                this.sendIdsCustomer(customer).then(() => {
+                    console.log('Envio para serviço externo iniciado...');
+                }).catch((error) => {
+                    console.error('Erro no envio para serviço externo:', error);
+                });
+
+                createdCustomers.push(customer);
+            } catch (error: any) {
+                console.error('Erro na requisição:', error);
+                throw error;
+            }
+        }
+        console.log(createdCustomers);
+
+        return createdCustomers;
     }
 
     async searchID(data: IDomain['data']) {
         try {
+            const stringSearch = `metadata[\'CPF/CNPJ\']:\'${data.cpfCnpj}\'`
+            const customers = await this.stripe.customers.search({
+                query: stringSearch,
+            });
 
+            return customers
         } catch (error) {
             throw error
         }
     }
 
-    async searchAll(data: IDomain['data']) {
+    async searchAll(data: IDomain['data'], limitObject: any) {
         try {
+            const customers = await this.stripe.customers.list({
+                ...limitObject,
+            });
 
+            return customers
         } catch (error) {
             throw error
         }
     }
 
-    async update(data: IDomain['data'], params: IDomain['data']) {
+    async update(data: any, id: string) {
         try {
+            console.log('repo', data, id);
 
+            const customer = await this.stripe.customers.update(
+                id,
+                {
+                    ...data[0]
+                }
+            )
+            console.log('repo', customer, data);
+
+            return customer
         } catch (error) {
             throw error
         }
     }
     async delete(data: IDomain['data']) {
         try {
+            const id = data.id as string
+            const deleted = await this.stripe.customers.del(id);
 
+            return deleted
         } catch (error) {
             throw error
         }
@@ -88,7 +109,17 @@ export class Repository implements IRepository {
 
     async recovery(data: IDomain['data']) {
         try {
-
+            const id = data.id as string
+            console.log('REPOO', data);
+            console.log('REPOO',id);
+            console.log('REPOO',data.id);
+            
+            
+            
+            const customer = await this.stripe.customers.retrieve(id);
+            console.log(customer);
+            
+            return customer
         } catch (error) {
             throw error
         }

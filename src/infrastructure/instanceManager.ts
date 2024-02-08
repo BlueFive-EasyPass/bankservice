@@ -20,11 +20,11 @@ export class InstanceManager implements IInstanceManager {
   private users: IArrayUser
   private mid: IMid
 
-  constructor(data: any, protocol: string, users: any) {
+  constructor(data: any, users: any) {
     this.data = data;
     this.users = users
     this.mid = new Mid(this.users)
-    this.repository = new Repository(protocol);
+    this.repository = new Repository();
     this.service = new Service(this.repository);
     this.domain = new Domain(this.data, this.service);
     this.controller = new Controller(this.domain, this.mid);
@@ -32,6 +32,7 @@ export class InstanceManager implements IInstanceManager {
 
   getController(): IController {
     console.log(this.data);
+    console.log(this.users);
 
     return this.controller;
   }

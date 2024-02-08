@@ -25,18 +25,21 @@ export class Service implements IService {
         }
     }
 
-    async searchAll(data: IDomain['data']) {
+    async searchAll(data: IDomain['data'], limit: Object) {
         try {
-            const result = await this.repository.searchAll(data)
+            const result = await this.repository.searchAll(data, limit)
             return result
         } catch (error) {
             throw error
         }
     }
 
-    async update(data: IDomain['data'], params: IDomain['data']) {
+    async update(data: any, id: string) {
         try {
-            const result = await this.repository.update(data, params)
+            console.log('service', data, id);
+            const result = await this.repository.update(data, id)
+            console.log('service', result, data);
+
             return result
         } catch (error) {
             throw error
@@ -53,7 +56,7 @@ export class Service implements IService {
 
     async recovery(data: IDomain['data']) {
         try {
-            const result = await this.repository.delete(data)
+            const result = await this.repository.recovery(data)
             return result
         } catch (error) {
             throw error

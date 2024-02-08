@@ -9,11 +9,11 @@ export default () => <Resource>{
     get: {
         handler: async (request: FastifyRequest, reply: FastifyReply) => {
             try {
-                const protocol = request.protocol
                 const data = request.query as IDomain['data']
-                const instanceManager: IInstanceManager = new InstanceManager(data, protocol, null)
+                console.log(request.query);
+                
+                const instanceManager: IInstanceManager = new InstanceManager(data, null)
                 const controller: IController = instanceManager.getController()
-                console.log(data);
                 console.log(instanceManager);
                 console.log(controller);
                 await controller.searchID(reply)

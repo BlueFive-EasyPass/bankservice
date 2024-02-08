@@ -1,4 +1,4 @@
-interface IUserData {
+export interface IUserData {
     user_CPF: string;
     user_RG: string;
     user_nome: string;

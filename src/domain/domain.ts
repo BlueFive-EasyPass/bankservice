@@ -29,18 +29,22 @@ export class Domain implements IDomain {
         }
     }
 
-    async searchAll() {
+    async searchAll(limit: any) {
         try {
-            const result = await this.service.searchAll(this.data)
+            const result = await this.service.searchAll(this.data, limit)
             return result
         } catch (error) {
             throw error
         }
     }
 
-    async update(params: IDomain['data']) {
+    async update(data: any, id: string) {
         try {
-            const result = await this.service.update(this.data, params)
+            console.log('domain', data, id);
+
+            const result = await this.service.update(data, id)
+            console.log('domain', result, data);
+            
             return result
         } catch (error) {
             throw error
@@ -57,7 +61,7 @@ export class Domain implements IDomain {
 
     async recovery() {
         try {
-            const result = await this.service.delete(this.data)
+            const result = await this.service.recovery(this.data)
             return result
         } catch (error) {
             throw error

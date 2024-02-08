@@ -8,19 +8,23 @@ export class Mid implements IMid {
     }
 
     async transformUsers() {
+      console.log(this.users);
+      
         return this.users.map(user => ({
             name: user.user_nome,
-            cpfCnpj: user.user_CPF,
             email: user.user_email,
-            mobilePhone: user.user_cel,
-            address: `${user.user_endcidade} - ${user.user_endUF}`,
-            addressNumber: user.user_endnum,
-            complement: user.user_endcomplemento,
-            province: user.user_endbairro,
-            postalCode: user.user_endCEP,
-            externalReference: user.user_CPF,
-            notificationDisabled: true,
-            groupName: user.user_CPF 
+            address: {
+              postal_code: user.user_endCEP,
+              state: user.user_endUF,
+              city: user.user_endcidade,
+              line1: `${user.user_endbairro}, ${user.user_endrua}, ${user.user_endnum} - ${user.user_endcomplemento}`
+            },
+            phone: user.user_cel,
+            metadata: {
+              'CPF/CNPJ': user.user_CPF,
+              RG: user.user_RG,
+              tipo: user.user_tipo
+            }
         }));
     }
 }
