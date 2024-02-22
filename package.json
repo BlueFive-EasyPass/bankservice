@@ -17,6 +17,7 @@
   "dependencies": {
     "@fastify/cookie": "^9.2.0",
     "aws-sdk": "^2.1513.0",
+    "axios": "^1.6.7",
     "dotenv": "^16.3.1",
     "fastify-autoroutes": "^3.0.2",
     "mysql2": "^3.6.5",
